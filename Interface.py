@@ -3,7 +3,7 @@ from Transcript import Transcript
 from Summarizer import Summarizer
 
 def main():
-    st.title("News Summarizer")
+    st.title("News Summarizer AIRIW Project by Nishan and Nishank")
 
     # Input for query
     query = st.text_input("Enter your query:")

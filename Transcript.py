@@ -29,6 +29,7 @@ class Transcript:
                 url = item['link']
                 article = Article(url)
                 article.download()
+                print("Downloaded article", url)
                 article.parse()
                 articles_content.append(article.text)
             except Exception as e:
