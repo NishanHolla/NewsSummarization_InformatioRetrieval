@@ -4,9 +4,14 @@ from string import punctuation
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import sent_tokenize, word_tokenize
 from heapq import nlargest
+from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 
 class Summarizer:
-    def summarize_with_tfidf(self,text, per):
+    def __init__(self):
+        self.tokenizer = PegasusTokenizer.from_pretrained("google/pegasus-xsum")
+        self.model = PegasusForConditionalGeneration.from_pretrained("google/pegasus-xsum")
+
+    def summarize_with_tfidf(self, text, per):
         nlp = spacy.load('en_core_web_sm')
 
         # Split text into sentences
@@ -49,3 +54,15 @@ class Summarizer:
         final_summary = ' '.join(summary)
         
         return final_summary
+
+    def summarize_with_pegasus(self, text, per):
+        # Preprocess text (tokenization, truncation, padding)
+        inputs = self.tokenizer([text], max_length=1024, return_tensors="pt", truncation=True, padding="max_length")
+
+        # Generate summary using PEGASUS model
+        summary_ids = self.model.generate(inputs["input_ids"], max_length=int(len(text) * per), num_beams=4, early_stopping=True)
+
+        # Decode the summary
+        summary = self.tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
+        return summary
